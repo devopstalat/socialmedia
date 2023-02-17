@@ -21,6 +21,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check-quality:
+    runs-on: ubuntu-latest
+    name: A job to check my code quality
+    steps:
+    - name: Check code meets quality standards
+      id: codiga
+      uses: codiga/github-action@master
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        codiga_api_token: ${{ secrets.CODIGA_API_TOKEN }}
+        force_ref: 'none'
+        min_quality_grade: 'WARNING'
+        min_quality_score: '50'
+        max_defects_rate: '0.0001'
+        max_complex_functions_rate: '0.0001'
+        max_long_functions_rate: '0.0001'
+        project_name: ''
+        max_timeout_sec: '600'
+jobs:
   # Single deploy job since we're just deploying
   deploy:
     environment:
@@ -28,8 +47,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Codiga GitHub action
-        uses: codiga/github-action@v1
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup Pages
